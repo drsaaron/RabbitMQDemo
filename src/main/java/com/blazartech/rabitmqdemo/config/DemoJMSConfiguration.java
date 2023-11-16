@@ -6,14 +6,20 @@ package com.blazartech.rabitmqdemo.config;
 
 import com.rabbitmq.jms.admin.RMQConnectionFactory;
 import jakarta.jms.ConnectionFactory;
+import jakarta.jms.MessageListener;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 /**
  *
  * @author aar1069
  */
 @Configuration
+@Slf4j
 public class DemoJMSConfiguration {
 
     @Bean
@@ -25,6 +31,26 @@ public class DemoJMSConfiguration {
         connectionFactory.setHost("localhost");
         connectionFactory.setPort(5672);
         return connectionFactory;
+    }
+    
+    @Autowired
+    private MessageListener messageReceiver;
+    
+    @Value("${demo.queue.name}")
+    private String queueName;
+    
+    @Bean
+    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        
+        container.setConnectionFactory(connectionFactory);
+        container.setDestinationName(queueName);
+        container.setMessageListener(messageReceiver);
+        container.setSessionTransacted(true);
+        container.setConcurrency("5");
+        container.setErrorHandler(e -> log.error("error handling message: " + e.getMessage(), e));
+        
+        return container;
     }
 
 }

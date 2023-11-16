@@ -4,6 +4,7 @@
  */
 package com.blazartech.rabitmqdemo;
 
+import com.blazartech.rabitmqdemo.process.DemoItemProcessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
@@ -11,7 +12,7 @@ import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.jms.TextMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jms.annotation.JmsListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,7 +25,9 @@ public class MessageReceiver implements MessageListener {
     
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
-    @JmsListener(destination = "${demo.queue.name}", concurrency = "5")
+    @Autowired
+    private DemoItemProcessor itemProcessor;
+    
     @Override
     public void onMessage(Message message) {
         log.info("processing message {}", message);
@@ -35,6 +38,8 @@ public class MessageReceiver implements MessageListener {
             
                 DemoItem item = objectMapper.readValue(json, DemoItem.class);
                 log.info("got item {}", item);
+                
+                itemProcessor.processItem(item);
             } catch (JsonProcessingException|JMSException e) {
                 throw new RuntimeException("error processing data: " + e.getMessage(), e);
             }

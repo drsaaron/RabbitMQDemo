@@ -28,7 +28,9 @@ public class SendMessageDemoCommandLineRunner implements CommandLineRunner {
         DemoItem[] items = {
             new DemoItem(1, "Eddie", 60),
             new DemoItem(2, "Frank", 65),
-            new DemoItem(3, "Eric", 80)
+            new DemoItem(3, "Eric", 80),
+            new DemoItem(4, "Jimmy", 81),
+            new DemoItem(5, "Jeff", -1)
         };
         
         Arrays.asList(items).stream()
