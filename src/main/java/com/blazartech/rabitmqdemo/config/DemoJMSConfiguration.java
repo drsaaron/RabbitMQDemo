@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.util.ErrorHandler;
 
 /**
  *
@@ -39,6 +40,12 @@ public class DemoJMSConfiguration {
     @Value("${demo.queue.name}")
     private String queueName;
     
+    @Value("${demo.queue.concurrency}")
+    private String concurrency;
+    
+    @Autowired
+    private ErrorHandler errorHandler;
+    
     @Bean
     public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
@@ -47,8 +54,8 @@ public class DemoJMSConfiguration {
         container.setDestinationName(queueName);
         container.setMessageListener(messageReceiver);
         container.setSessionTransacted(true);
-        container.setConcurrency("5");
-        container.setErrorHandler(e -> log.error("error handling message: " + e.getMessage(), e));
+        container.setConcurrency(concurrency);
+        container.setErrorHandler(errorHandler);
         
         return container;
     }
