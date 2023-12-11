@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  *
  * @author aar1069
  */
-@Component
+//@Component
 @Slf4j
 public class MessageSenderImpl implements MessageSender {
 

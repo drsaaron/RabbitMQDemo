@@ -22,7 +22,7 @@ public class PubSubConfiguration {
     
     @Bean
     public FanoutExchange fanout() {
-        return new FanoutExchange("logs");
+        return new FanoutExchange("logs2");
     }
 
   /*  @Bean

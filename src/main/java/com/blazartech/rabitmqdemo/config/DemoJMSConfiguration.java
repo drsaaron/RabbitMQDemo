@@ -11,6 +11,7 @@ import jakarta.jms.MessageListener;
 import jakarta.jms.Queue;
 import jakarta.jms.Session;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -74,4 +75,10 @@ public class DemoJMSConfiguration {
         jmsDestination.setAmqpQueueName(queueName);*/
         return jmsDestination;
     }
+    
+  /*  @Bean
+    public TopicExchange publishTopic() {
+        TopicExchange pubishDestination = new TopicExchange("logs");
+        return pubishDestination;
+    }*/
 }
