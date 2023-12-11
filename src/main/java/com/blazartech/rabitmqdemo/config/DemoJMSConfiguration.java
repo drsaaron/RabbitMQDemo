@@ -38,8 +38,8 @@ public class DemoJMSConfiguration {
         return connectionFactory;
     }
 
-    @Autowired
-    private MessageListener messageReceiver;
+    //@Autowired
+    //private MessageListener messageReceiver;
 
     @Value("${demo.queue.name}")
     private String queueName;
@@ -50,7 +50,7 @@ public class DemoJMSConfiguration {
     @Autowired
     private ErrorHandler errorHandler;
 
-    @Bean
+    //@Bean
     public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 
@@ -58,7 +58,7 @@ public class DemoJMSConfiguration {
         container.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
       //  container.setDestination(destinationQueue());
         container.setDestinationName(queueName);
-        container.setMessageListener(messageReceiver);
+      //  container.setMessageListener(messageReceiver);
         container.setSessionTransacted(true);
         container.setConcurrency(concurrency);
         container.setErrorHandler(errorHandler);
