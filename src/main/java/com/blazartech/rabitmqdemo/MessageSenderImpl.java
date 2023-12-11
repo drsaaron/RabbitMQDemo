@@ -27,13 +27,10 @@ public class MessageSenderImpl implements MessageSender {
 
     @Autowired
     ConnectionFactory connectionFactory;
-
-/*    @Autowired
-    private Queue queue;*/
     
     @Value("${demo.queue.name}")
     private String queueName;
-    
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     public Message createMessage(Session session, DemoItem item) throws JMSException {

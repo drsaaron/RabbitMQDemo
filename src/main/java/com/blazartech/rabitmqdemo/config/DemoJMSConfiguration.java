@@ -5,8 +5,11 @@
 package com.blazartech.rabitmqdemo.config;
 
 import com.rabbitmq.jms.admin.RMQConnectionFactory;
+import com.rabbitmq.jms.admin.RMQDestination;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.MessageListener;
+import jakarta.jms.Queue;
+import jakarta.jms.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,31 +36,42 @@ public class DemoJMSConfiguration {
         connectionFactory.setPort(5672);
         return connectionFactory;
     }
-    
+
     @Autowired
     private MessageListener messageReceiver;
-    
+
     @Value("${demo.queue.name}")
     private String queueName;
-    
+
     @Value("${demo.queue.concurrency}")
     private String concurrency;
-    
+
     @Autowired
     private ErrorHandler errorHandler;
-    
+
     @Bean
     public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        
+
         container.setConnectionFactory(connectionFactory);
+        container.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
+      //  container.setDestination(destinationQueue());
         container.setDestinationName(queueName);
         container.setMessageListener(messageReceiver);
         container.setSessionTransacted(true);
         container.setConcurrency(concurrency);
         container.setErrorHandler(errorHandler);
-        
+
         return container;
     }
 
+    @Bean
+    public Queue destinationQueue() {
+        RMQDestination jmsDestination = new RMQDestination();
+        jmsDestination.setDestinationName(queueName);
+        jmsDestination.setQueue(true);
+/*        jmsDestination.setAmqp(true);
+        jmsDestination.setAmqpQueueName(queueName);*/
+        return jmsDestination;
+    }
 }
