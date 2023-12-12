@@ -54,12 +54,12 @@ public class DemoJMSConfiguration {
     private ErrorHandler errorHandler;
 
     @Bean
-    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
+    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, Queue destinationQueue) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 
         container.setConnectionFactory(connectionFactory);
         container.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
-        container.setDestination(destinationQueue());
+        container.setDestination(destinationQueue);
       //  container.setDestinationName(queueName);
         container.setMessageListener(messageReceiver);
         container.setSessionTransacted(true);
