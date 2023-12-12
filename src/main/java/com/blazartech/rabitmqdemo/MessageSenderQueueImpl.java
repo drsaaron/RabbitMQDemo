@@ -5,7 +5,7 @@
 package com.blazartech.rabitmqdemo;
 
 import jakarta.jms.Destination;
-import jakarta.jms.Topic;
+import jakarta.jms.Queue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,23 +14,21 @@ import org.springframework.stereotype.Component;
  *
  * @author aar1069
  */
-@Component
+//@Component
 @Slf4j
-public class MessageSenderPublisherImpl extends MessageSenderBaseImpl {
-
+public class MessageSenderQueueImpl extends MessageSenderBaseImpl {
+    
     @Autowired
-    private Topic publicationTopic;
+    private Queue destinationQueue;
     
     @Override
     public Destination getDestination() {
-        return publicationTopic;
+        return destinationQueue;
     }
 
     @Override
     public String getMethodName() {
-        return "publication";
+        return "queue";
     }
 
-    
-    
 }

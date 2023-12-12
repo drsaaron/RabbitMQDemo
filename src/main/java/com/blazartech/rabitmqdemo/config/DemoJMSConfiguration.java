@@ -59,8 +59,8 @@ public class DemoJMSConfiguration {
 
         container.setConnectionFactory(connectionFactory);
         container.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
-      //  container.setDestination(destinationQueue());
-        container.setDestinationName(queueName);
+        container.setDestination(destinationQueue());
+      //  container.setDestinationName(queueName);
         container.setMessageListener(messageReceiver);
         container.setSessionTransacted(true);
         container.setConcurrency(concurrency);
@@ -71,11 +71,7 @@ public class DemoJMSConfiguration {
 
     @Bean
     public Queue destinationQueue() {
-        RMQDestination jmsDestination = new RMQDestination();
-        jmsDestination.setDestinationName(queueName);
-        jmsDestination.setQueue(true);
-/*        jmsDestination.setAmqp(true);
-        jmsDestination.setAmqpQueueName(queueName);*/
+        RMQDestination jmsDestination = new RMQDestination(queueName, true, false);
         log.info("destination queue: {}", jmsDestination);
         return jmsDestination;
     }
