@@ -28,7 +28,7 @@ public class MessageSenderPublisherImpl implements MessageSender {
     @Autowired
     ConnectionFactory connectionFactory;
     
-   @Autowired
+    @Autowired
     private Topic publicationTopic;
     
     private static final ObjectMapper objectMapper = new ObjectMapper();
