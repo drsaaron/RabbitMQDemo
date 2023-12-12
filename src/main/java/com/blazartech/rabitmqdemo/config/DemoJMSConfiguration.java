@@ -10,8 +10,8 @@ import jakarta.jms.ConnectionFactory;
 import jakarta.jms.MessageListener;
 import jakarta.jms.Queue;
 import jakarta.jms.Session;
+import jakarta.jms.Topic;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,11 +38,14 @@ public class DemoJMSConfiguration {
         return connectionFactory;
     }
 
-    //@Autowired
-    //private MessageListener messageReceiver;
+    @Autowired
+    private MessageListener messageReceiver;
 
     @Value("${demo.queue.name}")
     private String queueName;
+    
+    @Value("${demo.topic.name}")
+    private String topicName;
 
     @Value("${demo.queue.concurrency}")
     private String concurrency;
@@ -50,7 +53,7 @@ public class DemoJMSConfiguration {
     @Autowired
     private ErrorHandler errorHandler;
 
-    //@Bean
+    @Bean
     public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 
@@ -58,7 +61,7 @@ public class DemoJMSConfiguration {
         container.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
       //  container.setDestination(destinationQueue());
         container.setDestinationName(queueName);
-      //  container.setMessageListener(messageReceiver);
+        container.setMessageListener(messageReceiver);
         container.setSessionTransacted(true);
         container.setConcurrency(concurrency);
         container.setErrorHandler(errorHandler);
@@ -73,12 +76,14 @@ public class DemoJMSConfiguration {
         jmsDestination.setQueue(true);
 /*        jmsDestination.setAmqp(true);
         jmsDestination.setAmqpQueueName(queueName);*/
+        log.info("destination queue: {}", jmsDestination);
         return jmsDestination;
     }
     
-  /*  @Bean
-    public TopicExchange publishTopic() {
-        TopicExchange pubishDestination = new TopicExchange("logs");
-        return pubishDestination;
-    }*/
+    @Bean
+    public Topic publicationTopic() {
+        RMQDestination jmsDestination = new RMQDestination(topicName, false, false);
+        log.info("created destination {}", jmsDestination);
+        return jmsDestination;
+    }
 }

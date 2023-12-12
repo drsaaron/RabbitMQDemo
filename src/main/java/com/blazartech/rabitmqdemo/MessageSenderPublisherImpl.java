@@ -6,10 +6,15 @@ package com.blazartech.rabitmqdemo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
+import jakarta.jms.Topic;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,21 +26,30 @@ import org.springframework.stereotype.Component;
 public class MessageSenderPublisherImpl implements MessageSender {
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    ConnectionFactory connectionFactory;
     
-   /* @Autowired
-    private TopicExchange topicExchange;*/
+   @Autowired
+    private Topic publicationTopic;
     
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
+    public Message createMessage(Session session, DemoItem item) throws JMSException {
+        try {
+            String json = objectMapper.writeValueAsString(item);
+            log.info("json = {}", json);
+            TextMessage tm = session.createTextMessage(json);
+            return tm;
+        } catch(JsonProcessingException e) {
+            throw new RuntimeException("error creating message: " + e.getMessage(), e);
+        }
+    }
+    
     @Override
     public void sendMessage(DemoItem item) {
-        log.info("publishing {}", item);
-        try {
-            rabbitTemplate.convertAndSend("logs", null, objectMapper.writeValueAsString(item));
-        } catch(JsonProcessingException e) {
-            throw new RuntimeException("error processing item: " + e.getMessage(), e);
-        }
+        log.info("sending message {}", item);
+        
+        JmsTemplate template = new JmsTemplate(connectionFactory);
+        template.send(publicationTopic, session -> createMessage(session, item));
     }
     
 }

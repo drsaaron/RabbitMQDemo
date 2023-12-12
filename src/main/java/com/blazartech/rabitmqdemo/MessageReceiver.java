@@ -9,9 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
 import jakarta.jms.TextMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class MessageReceiver {
+public class MessageReceiver implements MessageListener {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private DemoItemProcessor itemProcessor;
 
-    @RabbitListener(queues = "${demo.queue.name}")
+    /*@RabbitListener(queues = "${demo.queue.name}")
     public void onMessage(String json) throws JsonProcessingException {
         log.info("json to process = {}", json);
 
@@ -36,9 +36,9 @@ public class MessageReceiver {
         log.info("got item {}", item);
 
         itemProcessor.processItem(item);
-    }
+    }*/
 
-    /*@Override
+    @Override
     public void onMessage(Message message) {
         log.info("processing message {}", message);
         if (message instanceof TextMessage textMessage) {
@@ -56,5 +56,5 @@ public class MessageReceiver {
         } else {
             throw new IllegalArgumentException("message is not a text message");
         }
-    }*/
+    }
 }
