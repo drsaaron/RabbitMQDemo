@@ -12,5 +12,5 @@ import com.blazartech.rabitmqdemo.DemoItem;
  */
 public interface DemoItemProcessor {
     
-    void processItem(DemoItem item);
+    void processItem(DemoItem item, boolean throwException);
 }

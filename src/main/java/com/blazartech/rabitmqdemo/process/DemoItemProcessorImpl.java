@@ -16,12 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class DemoItemProcessorImpl implements DemoItemProcessor {
-
-    @Value("${demo.throwException}")
-    private boolean throwException;
     
     @Override
-    public void processItem(DemoItem item) {
+    public void processItem(DemoItem item, boolean throwException) {
         log.info("here we go with item {}", item);
         
         if (throwException && item.getId() % 4 == 0) {

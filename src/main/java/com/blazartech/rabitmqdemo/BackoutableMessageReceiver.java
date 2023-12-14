@@ -14,6 +14,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import static org.springframework.amqp.support.AmqpHeaders.DELIVERY_TAG;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,9 @@ import org.springframework.stereotype.Component;
 public class BackoutableMessageReceiver {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    @Value("${demo.throwException}")
+    private boolean throwException;
 
     @Autowired
     private DemoItemProcessor itemProcessor;
@@ -49,7 +53,7 @@ public class BackoutableMessageReceiver {
         try {
             DemoItem item = objectMapper.readValue(json, DemoItem.class);
             log.info("got item {}", item);
-            itemProcessor.processItem(item);
+            itemProcessor.processItem(item, throwException);
         } catch (Exception e) {
             log.error("caught exception: " + e.getMessage(), e);
             channel.basicReject(deliveryTag, false);

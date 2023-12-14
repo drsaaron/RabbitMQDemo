@@ -49,7 +49,7 @@ public class MessageReceiver implements MessageListener {
                 DemoItem item = objectMapper.readValue(json, DemoItem.class);
                 log.info("got item {}", item);
                 
-                itemProcessor.processItem(item);
+                itemProcessor.processItem(item, false); // exception handling doesn't work here yet
             } catch (JsonProcessingException|JMSException e) {
                 throw new RuntimeException("error processing data: " + e.getMessage(), e);
             }
