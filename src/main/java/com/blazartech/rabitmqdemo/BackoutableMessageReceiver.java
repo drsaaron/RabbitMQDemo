@@ -18,28 +18,37 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 /**
- * a message handler using native RabbitListener rather than JMS that will
- * catch any exception and reject the message, putting it to the backout queue.
+ * a message handler using native RabbitListener rather than JMS that will catch
+ * any exception and reject the message, putting it to the backout queue.
+ *
  * @author aar1069
  */
 @Component
 @Slf4j
 public class BackoutableMessageReceiver {
-    
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private DemoItemProcessor itemProcessor;
-    
+
+    private String getMessageBody(Message message) {
+        // convert the same way as in convert.py, which seems just as odd here.
+        byte[] encodedMessageBody = message.getBody();
+        String encodedMessageBodyString = new String(encodedMessageBody);
+        int index = encodedMessageBodyString.indexOf("{");
+        return encodedMessageBodyString.substring(index);
+    }
+
     @RabbitListener(queues = "${demo.backoutable.queue.name}")
     public void onMessage(Message message, Channel channel, @Header(DELIVERY_TAG) long deliveryTag) throws JsonProcessingException, IOException {
         log.info("got message {}", message);
+        String json = getMessageBody(message);
+        log.info("json = {}", json);
 
         try {
-            /* I can't figure out yet how to get the json out of the message body
-               since the message is a jms message and encoded.
-            */
-            DemoItem item = new DemoItem();
+            DemoItem item = objectMapper.readValue(json, DemoItem.class);
+            log.info("got item {}", item);
             itemProcessor.processItem(item);
         } catch (Exception e) {
             log.error("caught exception: " + e.getMessage(), e);
