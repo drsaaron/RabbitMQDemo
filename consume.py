@@ -22,6 +22,9 @@ def callback(ch, method, properties, body):
     message = json.loads(bodyJson)
     print("name = " + message["name"])
 
-channel.basic_consume(queue='spring-log-receiver-2', on_message_callback=callback, auto_ack=True)
+    # fail the sucker, to see if it goes to the backout queue.  WHICH IT DOES!
+    ch.basic_reject(delivery_tag = method.delivery_tag, requeue=False)
+
+channel.basic_consume(queue='my-topic-subscriber', on_message_callback=callback, auto_ack=False)
 print(' [*] Waiting for messages. To exit press CTRL+C')
 channel.start_consuming()
