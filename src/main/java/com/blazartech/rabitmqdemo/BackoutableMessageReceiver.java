@@ -36,6 +36,9 @@ public class BackoutableMessageReceiver {
         log.info("got message {}", message);
 
         try {
+            /* I can't figure out yet how to get the json out of the message body
+               since the message is a jms message and encoded.
+            */
             DemoItem item = new DemoItem();
             itemProcessor.processItem(item);
         } catch (Exception e) {
